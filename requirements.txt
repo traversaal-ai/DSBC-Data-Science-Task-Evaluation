@@ -1,0 +1,16 @@
+requests
+datasets
+pandas
+python-dotenv 
+openai 
+matplotlib 
+seaborn 
+tqdm
+typing
+openai
+anthropic
+google-generativeai
+google-cloud-aiplatform
+google
+scipy
+scikit-learn

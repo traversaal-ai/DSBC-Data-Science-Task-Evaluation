@@ -1,0 +1,3 @@
+touch temp/processed_data/.gitkeep
+touch temp/evaluated_data/.gitkeep
+touch temp/results/.gitkeep

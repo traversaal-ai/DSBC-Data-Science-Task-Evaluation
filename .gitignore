@@ -1,0 +1,17 @@
+.env
+__pycache__/
+temp/__pycache__/
+.vscode/
+
+temp/processed_data/*
+!temp/processed_data/.gitkeep
+
+temp/evaluated_data/*
+!temp/evaluated_data/.gitkeep
+
+temp/results/*
+!temp/results/.gitkeep
+
+
+
+/test.py
