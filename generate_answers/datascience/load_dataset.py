@@ -27,6 +27,4 @@ def get_dataset_path_mapping() -> pd.DataFrame:
     
     df['PATH'] = df['Dataset'].map(path_mapping)
 
-    df=df[:10]
-
     return df
