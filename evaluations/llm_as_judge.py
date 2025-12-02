@@ -1,8 +1,7 @@
-
 import os
 import json
 import pandas as pd
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 from collections import defaultdict
 from tqdm import tqdm
 import re
@@ -20,7 +19,7 @@ def parse_tasks_from_string(tasks_str: str) -> List[str]:
     # Split by comma and strip whitespace
     return [task.strip() for task in tasks_str.split(',')]
 
-def calculate_evaluation_metrics( df: pd.DataFrame) -> Dict[str, Any]:
+def calculate_evaluation_metrics(df: pd.DataFrame) -> Dict[str, Any]:
     """Calculate comprehensive evaluation metrics for LLM-as-a-judge results"""
     
     # Overall metrics
@@ -108,7 +107,7 @@ def calculate_evaluation_metrics( df: pd.DataFrame) -> Dict[str, Any]:
         "datasets": dataset_accuracies
     }
 
-def save_evaluation_results(df_name:str, metrics: Dict[str, Any], model_name: str) -> str:
+def save_evaluation_results(df_name: str, metrics: Dict[str, Any], model_name: str) -> str:
     """Save evaluation metrics to a JSON file"""
 
     os.makedirs('temp/results', exist_ok=True)
@@ -121,7 +120,7 @@ def save_evaluation_results(df_name:str, metrics: Dict[str, Any], model_name: st
     return filepath
 
 
-def evaluate_llm_as_judge(df_name:str, pipeline: LLMPipeline, model_name: str, df: pd.DataFrame, detailed_report: bool) -> None:
+def evaluate_llm_as_judge(df_name: str, pipeline: LLMPipeline, model_name: str, df: pd.DataFrame, detailed_report: bool) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     """Evaluate LLM responses using LLM-as-a-judge approach"""
     df['raw_judgment'] = '' 
     df['evaluation_result'] = ''  
@@ -167,12 +166,12 @@ def evaluate_llm_as_judge(df_name:str, pipeline: LLMPipeline, model_name: str, d
     
     save_evaluation_results(df_name, metrics, model_name)
     
-    return df
+    return df, metrics
 
-def run_evals(df_name:str, input_path: str, provider: str, model_name: str ):
+def run_evals(df_name: str, input_path: str, provider: str, model_name: str):
     """Main function to run evaluation on a specific DataFrame file"""
 
-    import sys; sys.stdout.flush(); print( "!!! Evaluations Started !!!\n", flush=True); sys.stdout.flush()
+    import sys; sys.stdout.flush(); print("!!! Evaluations Started !!!\n", flush=True); sys.stdout.flush()
 
     config = load_config_from_env(provider)
     
@@ -197,10 +196,14 @@ def run_evals(df_name:str, input_path: str, provider: str, model_name: str ):
     df = pd.read_csv(input_path)
   
     print("Starting evaluation...")
-    evaluated_df = evaluate_llm_as_judge(df_name, pipeline, MODEL_NAME, df, detailed_report=True)
+    evaluated_df, metrics = evaluate_llm_as_judge(df_name, pipeline, MODEL_NAME, df, detailed_report=True)
     
     os.makedirs('temp/evaluated_data', exist_ok=True)
     base_name = os.path.splitext(os.path.basename(input_path))[0]
     evaluated_path = f'temp/evaluated_data/evaluated_{MODEL_NAME.replace("/", "_")}_{base_name}.csv'
     evaluated_df.to_csv(evaluated_path, index=False)
     print(f"Evaluated data saved to: {evaluated_path}")
+    
+    print(f"\n=== FINAL ACCURACY: {metrics['overall']['accuracy']:.2%} ===")
+    
+    return evaluated_df, metrics
