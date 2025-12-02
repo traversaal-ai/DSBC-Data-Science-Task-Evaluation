@@ -62,7 +62,7 @@ def get_evaluation_metrics(
         print(f"Results type: {type(eval_results).__name__}")
         
         # Print results based on type
-        _print_results(eval_results)
+        # _print_results(eval_results)
         
         return eval_results
         
@@ -146,7 +146,7 @@ def batch_evaluate_files(
             results[Path(file_path).name] = metrics
             
         except Exception as e:
-            print(f"  ✗ Failed: {e}")
+            print(f" Failed: {e}")
             results[Path(file_path).name] = None
     
     print("\n" + "="*70)

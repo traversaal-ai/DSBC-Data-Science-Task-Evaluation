@@ -11,7 +11,7 @@ Usage:
     # Single query test
     python main.py --mode single --query "What is the average sales?" --filepath temp/datafiles/sales_dataset.csv
 
-Author: DSBC Team
+Author: Traversaal Team
 """
 
 import argparse
