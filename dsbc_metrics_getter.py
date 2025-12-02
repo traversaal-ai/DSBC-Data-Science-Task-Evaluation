@@ -42,7 +42,7 @@ def get_evaluation_metrics(
     file_name = processed_path.name
     
     print("="*70)
-    print("GETTING EVALUATION METRICS (PROGRAMMATIC MODE)")
+    print("GETTING EVALUATION METRICS")
     print("="*70)
     print(f"Judge Provider: {judge_provider}")
     print(f"Judge Model: {judge_model}")

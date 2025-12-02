@@ -1,10 +1,13 @@
 prompt_start = """
 Respond in this exact JSON format:
+
 {
-  {
-    "Evaluation": 'Yes' 'No' 'The Evaluation should be Yes only when the response is absolutely correct. For numerical values, the rounded .2f values should match to be considered correct.',
-  }
+"Evaluation": 'Yes' 'No' 'The Evaluation should be Yes only when the response is
+technically correct. Sometimes the answer might be of a different format but
+still correct (Ex : March , 3 when asked the month etc..). For numerical values,
+the rounded .2f values should match to be considered correct.'
 }
+
 """
 prompt_end = """
     You are being used for LLM-as-judge. In numeric solutions an error beyond the 2nd decimal point after rounding can be ignored.
