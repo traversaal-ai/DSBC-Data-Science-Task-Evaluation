@@ -56,12 +56,12 @@ class DSBCEvaluator:
         self.judge_model = judge_model
         self.judge_temperature = judge_temperature
 
-    def run_dataset_evaluation(self, no_of_samples: int | None = None) -> str:
+    def run_dataset_evaluation(self, no_of_samples: int | None = None) -> Dict[str, Any]:
         """
         Run complete dataset evaluation with LLM judge.
 
         Returns:
-            Filename of processed results
+            Dictionary containing filename and evaluation metrics
         """
        
         print("DSBC DATASET EVALUATION") 
@@ -86,7 +86,8 @@ class DSBCEvaluator:
             print("Evaluating responses using LLM as judge...")
             processed_data_path = f"temp/processed_data/{file_name}"
 
-            run_evals(
+            # Capture the evaluation results
+            df, eval_results = run_evals(
                 df_name=file_name,
                 input_path=processed_data_path,
                 provider=self.judge_provider,
@@ -97,8 +98,12 @@ class DSBCEvaluator:
             print(f"Results saved in: temp/evaluated_data/")
             print(f"Processed data: {processed_data_path}")
             
-
-            return file_name
+            # Return both filename and metrics
+            return {
+                "file_name": file_name,
+                "metrics": eval_results,
+                "processed_path": processed_data_path
+            }
 
         except Exception as e:
             print(f"Error during dataset evaluation: {e}")
@@ -257,23 +262,45 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
             print(f"Processed file: {processed_path}")
             print("-" * 70)
 
-            run_evals(
+            df, eval_results = run_evals(
                 df_name=file_name,
                 input_path=str(processed_path),
                 provider=args.judge_provider,
                 model_name=args.judge_model
             )
+            
+            # Print and return metrics
+            print("\n" + "="*70)
+            print("EVALUATION METRICS")
+            print("="*70)
+            if eval_results:
+                for key, value in eval_results.items():
+                    print(f"{key}: {value}")
+            
+            return eval_results
+            
         else:
             # All other modes use the evaluator (requires provider/model)
             evaluator = create_evaluator_from_args(args)
 
             if args.mode == 'dataset':
                 # Full pipeline: generation + evaluation
-                evaluator.run_dataset_evaluation(
+                results = evaluator.run_dataset_evaluation(
                     no_of_samples=getattr(args, 'sample_size', None)
                 )
+                
+                # Print metrics
+                print("\n" + "="*70)
+                print("EVALUATION METRICS")
+                print("="*70)
+                if results and 'metrics' in results:
+                    for key, value in results['metrics'].items():
+                        print(f"{key}: {value}")
+                
+                return results
             else:  # single mode
-                evaluator.run_single_query_evaluation(args.query, args.filepath)
+                result = evaluator.run_single_query_evaluation(args.query, args.filepath)
+                return result
 
     except KeyboardInterrupt:
         print("\n  Evaluation interrupted by user")
@@ -284,4 +311,5 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
 
 
 if __name__ == "__main__":
-    main()
+    results = main()
+    # Now results will contain the metrics that can be accessed programmatically
