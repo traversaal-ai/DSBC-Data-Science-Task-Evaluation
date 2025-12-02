@@ -104,7 +104,8 @@ def get_dataset_responses(
     download_data: bool,
     model_name: str, 
     temperature: float, 
-    llm_pipeline: LLMPipeline
+    llm_pipeline: LLMPipeline,
+    no_of_samples: int | None = None,
 ) -> Dict[str, Any]:
     if download_data:
         print("Downloading datasets...")
@@ -112,6 +113,12 @@ def get_dataset_responses(
         print("Datasets downloaded!\nLoading dataset...")
     df_final = get_dataset_path_mapping()
     print("Dataset loaded!")
+
+    if no_of_samples is not None:
+        # Clamp to valid range
+        no_of_samples = max(1, min(no_of_samples, len(df_final)))
+        df_final = df_final.sample(n=no_of_samples, random_state=42).reset_index(drop=True)
+        print(f"Using a sample of {no_of_samples} rows out of {len(get_dataset_path_mapping())}", flush=True)
     
     # Initialize new columns if they don't exist
     for col in ['Response_code', 'Response_output', 'Response_analysis', 'Response_reasoning']:
@@ -142,7 +149,12 @@ def get_dataset_responses(
     }
     
 
-def run_dataset(provider: str, model_name: str, temperature : float)-> str:
+def run_dataset(
+    provider: str,
+    model_name: str,
+    temperature: float,
+    no_of_samples: int | None = None,
+) -> str:
     
     
     config = load_config_from_env(provider)
@@ -160,12 +172,13 @@ def run_dataset(provider: str, model_name: str, temperature : float)-> str:
 
     pipeline = LLMPipeline(config)
     
-    # Get response for all datasets
+    # Get response for all datasets (full dataset by default, or sample if provided)
     response = get_dataset_responses(
         download_data=False,
         model_name=model_name,
         temperature=temperature,  # Use the constant TEMPERATURE
-        llm_pipeline=pipeline
+        llm_pipeline=pipeline,
+        no_of_samples=no_of_samples,
     )
     
     # Print results

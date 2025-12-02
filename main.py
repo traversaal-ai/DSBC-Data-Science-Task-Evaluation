@@ -56,7 +56,7 @@ class DSBCEvaluator:
         self.judge_model = judge_model
         self.judge_temperature = judge_temperature
 
-    def run_dataset_evaluation(self) -> str:
+    def run_dataset_evaluation(self, no_of_samples: int | None = None) -> str:
         """
         Run complete dataset evaluation with LLM judge.
 
@@ -70,6 +70,8 @@ class DSBCEvaluator:
         print(f"Temperature: {self.temperature}")
         print(f"Judge Provider: {self.judge_provider}")
         print(f"Judge Model: {self.judge_model}")
+        if no_of_samples is not None:
+            print(f"Sample size: {no_of_samples} rows")
         print("-" * 70)
 
         try:
@@ -77,7 +79,8 @@ class DSBCEvaluator:
             file_name = run_dataset(
                 provider=self.provider,
                 model_name=self.model_name,
-                temperature=self.temperature
+                temperature=self.temperature,
+                no_of_samples=no_of_samples,
             )
 
             print("Evaluating responses using LLM as judge...")
@@ -176,10 +179,10 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
     )
 
     # Common arguments
-    parser.add_argument('--provider', required=True,
-                       help='LLM provider for generation (required)')
-    parser.add_argument('--model', required=True,
-                       help='Model name for generation (required)')
+    parser.add_argument('--provider',
+                       help='LLM provider for generation (required for full dataset mode and single mode)')
+    parser.add_argument('--model',
+                       help='Model name for generation (required for full dataset mode and single mode)')
     parser.add_argument('--temperature', type=float, default=0.3,
                        help='Temperature for generation (default: 0.3)')
 
@@ -195,6 +198,14 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
     parser.add_argument('--mode', choices=['dataset', 'single'], default='dataset',
                        help='Evaluation mode: dataset (default) or single query')
 
+    # Dataset sampling argument (only for dataset mode)
+    parser.add_argument('--sample-size', type=int,
+                       help='Optional number of rows to sample from the dataset for faster runs')
+
+    # Evaluation-only on existing processed file (skip generation)
+    parser.add_argument('--processed-file',
+                       help='Path to an existing processed CSV (with model answers) to run evaluation only')
+
     # Single query arguments
     parser.add_argument('--query', help='Data science question for single query mode (required for single mode)')
     parser.add_argument('--filepath', help='Path to CSV dataset file for single query mode (required for single mode)')
@@ -203,13 +214,28 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
 
     # Validate arguments based on mode
     if args.mode == 'dataset':
-        # Dataset mode requires all 4 parameters (generation + judge)
+        # Judge is always required for dataset mode
         if not args.judge_provider:
             parser.error("--judge-provider is required for dataset mode")
         if not args.judge_model:
             parser.error("--judge-model is required for dataset mode")
+
+        # If user provided a processed file, ensure it exists
+        if args.processed_file and not Path(args.processed_file).exists():
+            parser.error(f"Processed file not found: {args.processed_file}")
+
+        # For full pipeline (no processed-file), require generation provider/model
+        if not args.processed_file:
+            if not args.provider:
+                parser.error("--provider is required for dataset mode when not using --processed-file")
+            if not args.model:
+                parser.error("--model is required for dataset mode when not using --processed-file")
     else:  # single mode
-        # Single mode only requires generation parameters (2) + query/filepath
+        # Single mode requires generation parameters + query/filepath
+        if not args.provider:
+            parser.error("--provider is required for single mode")
+        if not args.model:
+            parser.error("--model is required for single mode")
         if not args.query:
             parser.error("--query is required for single mode")
         if not args.filepath:
@@ -219,12 +245,35 @@ Supported Providers: vertex_ai, openai, claude, gemini, azure, openrouter, anthr
 
     # Create evaluator and run evaluation
     try:
-        evaluator = create_evaluator_from_args(args)
+        # Dataset mode
+        if args.mode == 'dataset' and args.processed_file:
+            # EVAL-ONLY: use only judge provider/model, skip generation provider/model entirely
+            processed_path = Path(args.processed_file)
+            file_name = processed_path.name
 
-        if args.mode == 'dataset':
-            evaluator.run_dataset_evaluation()
-        else:  # single mode
-            evaluator.run_single_query_evaluation(args.query, args.filepath)
+            print("DSBC DATASET EVALUATION (EVAL-ONLY MODE)")
+            print(f"Judge Provider: {args.judge_provider}")
+            print(f"Judge Model: {args.judge_model}")
+            print(f"Processed file: {processed_path}")
+            print("-" * 70)
+
+            run_evals(
+                df_name=file_name,
+                input_path=str(processed_path),
+                provider=args.judge_provider,
+                model_name=args.judge_model
+            )
+        else:
+            # All other modes use the evaluator (requires provider/model)
+            evaluator = create_evaluator_from_args(args)
+
+            if args.mode == 'dataset':
+                # Full pipeline: generation + evaluation
+                evaluator.run_dataset_evaluation(
+                    no_of_samples=getattr(args, 'sample_size', None)
+                )
+            else:  # single mode
+                evaluator.run_single_query_evaluation(args.query, args.filepath)
 
     except KeyboardInterrupt:
         print("\n  Evaluation interrupted by user")

@@ -131,16 +131,30 @@ python main.py --provider vertex_ai --model gemini-2.5-pro --judge-provider open
 dsbc-eval [OPTIONS]
 
 Options:
-  --provider TEXT          LLM provider for generation (required)
-  --model TEXT             Model name for generation (required)
-  --temperature FLOAT      Generation temperature (default: 0.3)
-  --judge-provider TEXT    LLM provider for evaluation (required for dataset mode)
-  --judge-model TEXT       Judge model name for evaluation (required for dataset mode)
+  --provider TEXT           LLM provider for generation (required)
+  --model TEXT              Model name for generation (required)
+  --temperature FLOAT       Generation temperature (default: 0.3)
+  --judge-provider TEXT     LLM provider for evaluation (required for dataset mode)
+  --judge-model TEXT        Judge model name for evaluation (required for dataset mode)
   --judge-temperature FLOAT Judge temperature (default: 0.2)
-  --mode [dataset|single]  Evaluation mode (default: dataset)
-  --query TEXT             Query for single mode (required for single mode)
-  --filepath TEXT          Dataset file path for single mode (required for single mode)
-  --help                   Show this message and exit
+  --mode [dataset|single]   Evaluation mode (default: dataset)
+  --sample-size INTEGER     Optional number of rows to sample from the benchmark
+  --query TEXT              Query for single mode (required for single mode)
+  --filepath TEXT           Dataset file path for single mode (required for single mode)
+  --help                    Show this message and exit
+```
+
+### Examples
+
+```bash
+# Full benchmark
+python main.py --provider vertex_ai --model gemini-2.5-pro --judge-provider vertex_ai --judge-model gemini-2.0-flash
+
+# Faster run on a sample of 50 rows
+python main.py --provider vertex_ai --model gemini-2.5-pro --judge-provider vertex_ai --judge-model gemini-2.0-flash --sample-size 50
+
+# Single query
+python main.py --mode single --query "What is the average sales?" --filepath temp/datafiles/sales_dataset.csv --provider claude --model claude-3.5-sonnet-20241022
 ```
 
 
