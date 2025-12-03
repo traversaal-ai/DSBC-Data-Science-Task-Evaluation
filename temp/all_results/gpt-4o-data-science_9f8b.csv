@@ -1,0 +1,366 @@
+Index,Dataset,Tasks,Query_Raw,Query_Clean,Response_Expected,Solution_Code,PATH,Response_code,Response_output,Response_analysis,Response_reasoning
+206,WEATHER Dataset,"Feature Transformation, Statistics",What month of the year is typically the windiest?,What month of the year is typically the windiest?,January,"df_WEATHER['Date/Time'] = pd.to_datetime(df_WEATHER['Date/Time'])
+df_WEATHER['Month'] = df_WEATHER['Date/Time'].dt.month
+average_wind_speed_by_month = df_WEATHER.groupby('Month')['Wind Speed_km/h'].mean()
+most_windy_month = average_wind_speed_by_month.idxmax()
+print(f""The most windy month is month number: {most_windy_month}"")",temp/datafiles/weather_dataset.csv,"
+CODE: import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+CODE: data['Date/Time'] = pd.to_datetime(data['Date/Time'])
+
+CODE: data['Month'] = data['Date/Time'].dt.month
+
+CODE: monthly_wind_speed = data.groupby('Month')['Wind Speed_km/h'].mean()
+
+CODE: answer = monthly_wind_speed.idxmax()
+
+CODE: plt.figure(figsize=(10, 6))
+sns.barplot(x=monthly_wind_speed.index, y=monthly_wind_speed.values, palette='viridis')
+plt.title('Average Wind Speed by Month', fontsize=16)
+plt.xlabel('Month', fontsize=14)
+plt.ylabel('Average Wind Speed (km/h)', fontsize=14)
+plt.xticks(range(12), ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+plt.show()
+","Step 1 Output:
+
+---------------------
+Step 2 Output:
+
+---------------------
+Step 3 Output:
+
+---------------------
+Step 4 Output:
+
+---------------------
+Step 5 Output:
+1
+---------------------
+Step 6 Output:
+STDERR: <string>:2: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.","Based on the analysis of the dataset, the windiest month of the year is **January**. This conclusion comes from calculating the average wind speed for each month and identifying January as the month with the highest average wind speed.
+
+In practical terms, this means that during January, the wind tends to be stronger compared to other months in the dataset. This could have implications for activities or industries sensitive to wind conditions, such as transportation, outdoor events, or energy production (e.g., wind turbines). 
+
+One key insight is that wind speed varies by month, and January stands out as the peak period for stronger winds. This pattern could be influenced by seasonal weather conditions typical of that time of year, such as winter storms or atmospheric pressure changes.
+
+If you're planning or analyzing activities affected by wind, it would be wise to account for January's higher wind speeds in your considerations.","### STEP 1 ### : Import necessary libraries for data analysis and visualization.
+### STEP 2 ### : Convert the 'Date/Time' column to datetime format to enable extraction of month information.
+### STEP 3 ### : Extract the month from the 'Date/Time' column and create a new column 'Month' for grouping and analysis.
+### STEP 4 ### : Group the data by 'Month' and calculate the mean wind speed for each month to determine the windiest month.
+### STEP 5 ### : Find the month with the highest average wind speed and store it in the variable 'answer'.
+### STEP 6 ### : Visualize the average wind speed for each month using a bar plot to provide a clear representation of the data."
+215,WEATHER Dataset,"Data Pre-processing, Statistics",Which days have had the highest and lowest temperatures overall respectively ?,"Historically, which days have had the highest and lowest temperatures overall respectively based on available data ?","June 21 2012 , Jan 15 2012","df_WEATHER['Date/Time'] = pd.to_datetime(df_WEATHER['Date/Time'])
+df_WEATHER_daily = df_WEATHER.groupby(df_WEATHER['Date/Time'].dt.date)['Temp_C'].agg(['max', 'min'])
+hottest_day = df_WEATHER_daily.loc[df_WEATHER_daily['max'].idxmax()]
+coldest_day = df_WEATHER_daily.loc[df_WEATHER_daily['min'].idxmin()]
+print(""Hottest Day:"")
+print(hottest_day)
+print(""\nColdest Day:"")
+print(coldest_day)",temp/datafiles/weather_dataset.csv,"
+CODE: import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+CODE: data['Date/Time'] = pd.to_datetime(data['Date/Time'])
+
+CODE: data['Date'] = data['Date/Time'].dt.date
+
+CODE: daily_temp = data.groupby('Date')['Temp_C'].agg(['max', 'min']).reset_index()
+
+CODE: highest_temp_day = daily_temp.loc[daily_temp['max'].idxmax()]
+lowest_temp_day = daily_temp.loc[daily_temp['min'].idxmin()]
+
+CODE: answer = {
+    'highest_temp_day': highest_temp_day.to_dict(),
+    'lowest_temp_day': lowest_temp_day.to_dict()
+}
+
+CODE: plt.figure(figsize=(10, 6))
+sns.lineplot(x='Date', y='max', data=daily_temp, label='Max Temp')
+sns.lineplot(x='Date', y='min', data=daily_temp, label='Min Temp')
+plt.title('Daily Maximum and Minimum Temperatures')
+plt.xlabel('Date')
+plt.ylabel('Temperature (°C)')
+plt.legend()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+","Step 1 Output:
+
+---------------------
+Step 2 Output:
+
+---------------------
+Step 3 Output:
+
+---------------------
+Step 4 Output:
+
+---------------------
+Step 5 Output:
+
+---------------------
+Step 6 Output:
+{'highest_temp_day': {'Date': datetime.date(2012, 6, 21), 'max': 33.0, 'min': 24.0}, 'lowest_temp_day': {'Date': datetime.date(2012, 1, 15), 'max': -15.1, 'min': -23.3}}
+---------------------
+Step 7 Output:
+{'highest_temp_day': {'Date': datetime.date(2012, 6, 21), 'max': 33.0, 'min': 24.0}, 'lowest_temp_day': {'Date': datetime.date(2012, 1, 15), 'max': -15.1, 'min': -23.3}}","Based on the analysis of your dataset, I found the days with the highest and lowest temperatures recorded historically. Here's what I discovered:
+
+1. **Highest Temperature Day**: The hottest day in the dataset occurred on **June 21, 2012**, with a maximum temperature of **33.0°C** and a minimum temperature of **24.0°C**. This indicates a particularly warm summer day.
+
+2. **Lowest Temperature Day**: The coldest day in the dataset was on **January 15, 2012**, with a minimum temperature of **-23.3°C** and a maximum temperature of **-15.1°C**. This reflects an extremely cold winter day.
+
+### What This Means:
+- The highest temperature day aligns with the summer season, which is expected to have warmer weather. Similarly, the lowest temperature day falls in the winter season, which is typically the coldest time of the year.
+- These findings give us a clear sense of the temperature extremes in the dataset and help us understand the range of weather conditions captured.
+
+### Key Insights:
+- The temperature range in your dataset spans from **-23.3°C** to **33.0°C**, showing a significant variation between the coldest and hottest days.
+- The results align with seasonal expectations, where the hottest day occurs in summer and the coldest in winter.
+
+This analysis can be useful for understanding historical weather trends, planning seasonal activities, or even preparing for extreme weather conditions. Let me know if you'd like further insights or visualizations!","### STEP 1 ### : Import necessary libraries for data analysis and visualization.
+### STEP 2 ### : Convert the 'Date/Time' column to datetime format for easier manipulation and analysis.
+### STEP 3 ### : Extract the date part from the 'Date/Time' column to group data by individual days.
+### STEP 4 ### : Group the data by 'Date' and calculate the maximum and minimum temperatures for each day.
+### STEP 5 ### : Identify the day with the highest temperature and the day with the lowest temperature overall.
+### STEP 6 ### : Store the results in the 'answer' variable for output.
+### STEP 7 ### : Visualize the daily maximum and minimum temperatures using a line plot for better understanding of temperature trends."
+139,PRODUCTION Dataset,"Data Pre-processing, Statistics",Which crop has the most consistent average yield across different locations?,Which crop had the most consistent average yield across different locations?,"Wheat, durum","average_yield_by_location = df_PRODUCTION.groupby(['Type of crop', 'GEO'])['Average yield (kilograms per hectare)'].mean().reset_index()
+variance_by_crop = average_yield_by_location.groupby('Type of crop')['Average yield (kilograms per hectare)'].var()
+top_crops = variance_by_crop.nsmallest(1)
+print(""The crops with the largest variance in average yields across locations are:"")
+top_crops",temp/datafiles/production_dataset.csv,"
+CODE: import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+CODE: yield_std = data.groupby('Type of crop')['Average yield (kilograms per hectare)'].std()
+consistent_crop = yield_std.idxmin()
+answer = consistent_crop
+
+CODE: plt.figure(figsize=(12, 6))
+yield_std.sort_values().plot(kind='bar', color='skyblue')
+plt.title('Standard Deviation of Average Yield by Crop')
+plt.xlabel('Type of Crop')
+plt.ylabel('Standard Deviation of Average Yield (kg/ha)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+CODE: print(f'The crop with the most consistent average yield is: {answer}')
+","Step 1 Output:
+
+---------------------
+Step 2 Output:
+Wheat, durum
+---------------------
+Step 3 Output:
+Wheat, durum
+---------------------
+Step 4 Output:
+The crop with the most consistent average yield is: Wheat, durum","Based on the analysis of the dataset, the crop with the most consistent average yield across different locations is **Wheat, durum**. This conclusion was reached by calculating the standard deviation of the average yield (in kilograms per hectare) for each crop. A lower standard deviation indicates that the yield values are more consistent (less variable) across locations.
+
+In practical terms, this means that **Wheat, durum** tends to produce similar yields regardless of where it is grown, compared to other crops in the dataset. This consistency could make it a reliable choice for farmers who prioritize stable production outcomes across different regions.
+
+One key insight is that certain crops, like **Wheat, durum**, may be less sensitive to variations in environmental factors or farming practices, leading to more predictable yields. This could be particularly valuable for planning and resource allocation in agriculture.
+
+Overall, this finding highlights the importance of understanding yield variability when selecting crops for cultivation, especially in regions with diverse conditions.","### STEP 1 ### : Import necessary libraries for data analysis and visualization.
+### STEP 2 ### : Group the data by 'Type of crop' and calculate the standard deviation of 'Average yield (kilograms per hectare)' for each crop to measure consistency. Lower standard deviation indicates higher consistency.
+### STEP 3 ### : Visualize the standard deviation of average yields across crops to provide insights into consistency.
+### STEP 4 ### : Print the crop with the most consistent average yield based on the lowest standard deviation."
+178,STOCKS Dataset,"Data Parsing, Data Pre-processing","If I had invested $100 in each of the companies on the first day and sold all shares on the last day, what would have been my total net returns as a percentage ?",What would have been the net return percentage if $100 was invested in each company on the first day and held until the most recent available date in the dataset?,"Per-company results (invest $100 at first open → hold to last close):
+Name   buy_date  buy_price  sell_date  sell_price  shares_bought  final_value  dollar_gain  pct_return
+ AMD 2013-02-08       2.58 2017-12-29       10.28          38.76       398.45       298.45      298.45
+INTC 2013-02-08      20.90 2017-12-29       46.16           4.78       220.86       120.86      120.86
+NVDA 2013-02-08      12.37 2017-12-29      193.50           8.08     1,564.27     1,464.27    1,464.27
+QCOM 2013-02-08      66.90 2017-12-29       64.02           1.49        95.70        -4.30       -4.30
+
+Portfolio summary:
+Companies analyzed: 4
+Total invested: $400.00
+Total final value: $2,279.27
+Total net gain: $1,879.27
+Net return (portfolio): 469.82%","import pandas as pd
+import numpy as np
+
+# --- Config ---
+investment_per_company = 100.0
+df = df_STOCKS.copy()   # assumes df_STOCKS is loaded
+# ensure proper dtypes and ordering
+df['date'] = pd.to_datetime(df['date'])
+df = df.sort_values(['Name','date']).reset_index(drop=True)
+df['open']  = pd.to_numeric(df['open'], errors='coerce')
+df['close'] = pd.to_numeric(df['close'], errors='coerce')
+
+# Prepare results
+rows = []
+
+for name, g in df.groupby('Name', sort=True):
+    g = g.sort_values('date')
+    # drop rows missing open/close
+    g = g.dropna(subset=['open','close'])
+    if g.shape[0] < 1:
+        continue
+    first_row = g.iloc[0]
+    last_row  = g.iloc[-1]
+    buy_price  = float(first_row['open'])
+    sell_price = float(last_row['close'])
+    if buy_price == 0 or np.isnan(buy_price) or np.isnan(sell_price):
+        continue
+    shares = investment_per_company / buy_price
+    final_value = shares * sell_price
+    dollar_gain = final_value - investment_per_company
+    pct_return = (dollar_gain / investment_per_company) * 100.0
+    rows.append({
+        'Name': name,
+        'buy_date': first_row['date'].date(),
+        'buy_price': buy_price,
+        'sell_date': last_row['date'].date(),
+        'sell_price': sell_price,
+        'shares_bought': shares,
+        'final_value': final_value,
+        'dollar_gain': dollar_gain,
+        'pct_return': pct_return
+    })
+
+res = pd.DataFrame(rows)
+if res.empty:
+    raise SystemExit(""No valid companies with numeric open/close data found."")
+
+# Print per-company results
+pd.set_option('display.float_format', '{:,.2f}'.format)
+print(""Per-company results (invest $100 at first open → hold to last close):"")
+print(res[['Name','buy_date','buy_price','sell_date','sell_price','shares_bought','final_value','dollar_gain','pct_return']].to_string(index=False))
+
+# Portfolio aggregate: sum final values and compute overall net return %
+total_invested = investment_per_company * len(res)
+total_final = res['final_value'].sum()
+total_gain = total_final - total_invested
+portfolio_pct = (total_gain / total_invested) * 100.0
+
+print(""\nPortfolio summary:"")
+print(f""Companies analyzed: {len(res)}"")
+print(f""Total invested: ${total_invested:,.2f}"")
+print(f""Total final value: ${total_final:,.2f}"")
+print(f""Total net gain: ${total_gain:,.2f}"")
+print(f""Net return (portfolio): {portfolio_pct:.2f}%"")
+",temp/datafiles/stocks_dataset.csv,"
+CODE: import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+CODE: data['date'] = pd.to_datetime(data['date'])
+
+CODE: data = data.sort_values(by=['Name', 'date'])
+
+CODE: first_last_close = data.groupby('Name').agg(first_close=('close', 'first'), last_close=('close', 'last')).reset_index()
+
+CODE: first_last_close['net_return_percentage'] = ((first_last_close['last_close'] - first_last_close['first_close']) / first_last_close['first_close']) * 100
+
+CODE: answer = first_last_close
+print(answer)
+
+CODE: plt.figure(figsize=(10, 6))
+sns.barplot(x='Name', y='net_return_percentage', data=first_last_close, palette='viridis')
+plt.title('Net Return Percentage by Company')
+plt.xlabel('Company')
+plt.ylabel('Net Return Percentage (%)')
+plt.show()
+","Step 1 Output:
+
+---------------------
+Step 2 Output:
+
+---------------------
+Step 3 Output:
+
+---------------------
+Step 4 Output:
+
+---------------------
+Step 5 Output:
+
+---------------------
+Step 6 Output:
+Name  first_close  last_close  net_return_percentage
+0   AMD         2.59       10.28             296.911197
+1  INTC        21.00       46.16             119.809524
+2  NVDA        12.37      193.50            1464.268391
+3  QCOM        66.95       64.02              -4.376400
+---------------------
+Step 7 Output:
+STDERR: <string>:2: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.","If $100 was invested in each company on the first day of the dataset and held until the most recent available date, here's how the net return percentages break down:
+
+1. **AMD**: The investment grew by **296.91%**, meaning your $100 would now be worth approximately $396.91.
+2. **INTC**: The investment grew by **119.81%**, meaning your $100 would now be worth approximately $219.81.
+3. **NVDA**: The investment saw a massive growth of **1464.27%**, meaning your $100 would now be worth approximately $1,564.27.
+4. **QCOM**: The investment decreased by **-4.38%**, meaning your $100 would now be worth approximately $95.62.
+
+### What this means:
+- **NVIDIA (NVDA)** had the most impressive growth by far, with a return of over 14 times the initial investment. This suggests NVIDIA experienced significant long-term growth during the dataset's timeframe.
+- **AMD** and **Intel (INTC)** also performed well, with AMD nearly quadrupling the investment and Intel more than doubling it.
+- **Qualcomm (QCOM)**, however, saw a slight decline in value, indicating it underperformed compared to the other companies.
+
+### Key insights:
+- NVIDIA stands out as the top-performing company in this dataset, showing exceptional growth.
+- AMD and Intel also provided strong returns, making them solid investments during this period.
+- Qualcomm's slight loss highlights that not all companies in the dataset experienced growth, even in the same timeframe.
+
+In practical terms, this analysis shows the importance of choosing the right companies for long-term investments, as performance can vary significantly.","### STEP 1 ### : Import necessary libraries for data analysis and visualization.
+### STEP 2 ### : Ensure the 'date' column is in datetime format for proper sorting and filtering.
+### STEP 3 ### : Sort the data by date to ensure chronological order for each company.
+### STEP 4 ### : Group the data by company ('Name') and find the first and last closing prices for each company. This is necessary to calculate the net return percentage.
+### STEP 5 ### : Calculate the net return percentage for each company based on the first and last closing prices.
+### STEP 6 ### : Store the results in a variable called 'answer' and print it to display the net return percentage for each company.
+### STEP 7 ### : Visualize the net return percentage for each company using a bar plot for better understanding."
+16,AQI Dataset,Correlation Analysis,What is the correlation between PM 2.5 and 10 ?,"Can a correlation between PM 2.5 and PM 10 be determined from the available data? If so, what does this correlation reveal about their relationship?",Strong Positive (0.883),"correlation = df_AQI['PM2.5 (ug/m3)'].corr(df_AQI['PM10 (ug/m3)'])
+print(f""The correlation between PM2.5 and PM10 is: {correlation}"")",temp/datafiles/aqi_dataset.csv,"
+CODE: import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+CODE: data_cleaned = data.dropna(subset=['PM2.5 (ug/m3)', 'PM10 (ug/m3)'])
+
+CODE: correlation = data_cleaned['PM2.5 (ug/m3)'].corr(data_cleaned['PM10 (ug/m3)'])
+answer = correlation
+
+CODE: plt.figure(figsize=(10, 6))
+sns.scatterplot(x='PM2.5 (ug/m3)', y='PM10 (ug/m3)', data=data_cleaned, alpha=0.6)
+plt.title('Scatter Plot of PM2.5 vs PM10')
+plt.xlabel('PM2.5 (ug/m3)')
+plt.ylabel('PM10 (ug/m3)')
+plt.grid(True)
+plt.show()
+
+CODE: print(f'Correlation between PM2.5 and PM10: {correlation}')
+","Step 1 Output:
+
+---------------------
+Step 2 Output:
+
+---------------------
+Step 3 Output:
+0.8832244446130512
+---------------------
+Step 4 Output:
+0.8832244446130512
+---------------------
+Step 5 Output:
+Correlation between PM2.5 and PM10: 0.8832244446130512","Yes, a correlation between PM2.5 and PM10 can be determined from the available data. The calculated correlation coefficient is **0.883**, which indicates a strong positive relationship between the two variables. This means that as PM2.5 levels increase, PM10 levels tend to increase as well, and vice versa.
+
+In practical terms, this strong correlation suggests that PM2.5 and PM10 are closely related and likely share common sources or environmental factors influencing their concentrations. For example, both pollutants may originate from similar activities, such as vehicle emissions, industrial processes, or dust particles.
+
+One key insight from this finding is that monitoring one of these pollutants (e.g., PM2.5) could provide a good indication of the behavior of the other (e.g., PM10). However, it’s important to note that while they are related, PM2.5 represents finer particles that can penetrate deeper into the lungs, making it more harmful to health compared to PM10.
+
+The scatter plot visualization further supports this relationship, showing a clear upward trend between PM2.5 and PM10 values. This pattern reinforces the idea that these two pollutants are strongly linked in this dataset.","### STEP 1 ### : Import necessary libraries for data analysis and visualization.
+### STEP 2 ### : Drop rows with missing values in PM2.5 and PM10 columns to ensure accurate correlation analysis.
+### STEP 3 ### : Calculate the correlation coefficient between PM2.5 and PM10 to determine their linear relationship.
+### STEP 4 ### : Visualize the relationship between PM2.5 and PM10 using a scatter plot to observe their trend.
+### STEP 5 ### : Print the correlation coefficient to understand the strength and direction of the relationship."
