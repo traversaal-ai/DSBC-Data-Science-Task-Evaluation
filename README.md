@@ -205,7 +205,8 @@ The following scores were obtained using LLM-as-Judge evaluation methodology:
 | gpt-o4-mini | 0.618 |
 | glm-4.5 | 0.673 |  
 
-<img width="606" height="331" alt="image" src="https://github.com/user-attachments/assets/bb161c26-d516-4830-be58-ab98ab57b096" />
+<img width="3570" height="2367" alt="model_accuracy_comparison (2)" src="https://github.com/user-attachments/assets/d3341d6a-badd-4bcd-a014-e0251511f8a2" />
+
 
 ### Evaluation Settings
 - **Judge Model**: gemini-flash-2.0 from Vertex AI
