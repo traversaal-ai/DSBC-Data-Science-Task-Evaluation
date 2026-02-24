@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Dict, Optional
 
 def load_dataset_from_hf() -> pd.DataFrame:
-    dataset = load_dataset("large-traversaal/dsbc_v0")
+    dataset = load_dataset("large-traversaal/DSBC-Queries-V2.0")
     df = dataset['train'].to_pandas()
     print(f"Dataset loaded! Shape: {df.shape}")
     return df
