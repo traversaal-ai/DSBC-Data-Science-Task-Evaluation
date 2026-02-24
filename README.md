@@ -1,4 +1,4 @@
-# Data Science Code Generation Evaluation
+# DSBC : Data Science task Benchmarking with Context Engineering
 
 This repository evaluates Large Language Models on the [DSBC (Data Science Benchmarking)](https://huggingface.co/datasets/large-traversaal/DSBC-Queries-V2.0) dataset. It systematically tests LLM capabilities in data science code generation by generating responses to complex data science questions and evaluating them using LLM-based judges.
 
