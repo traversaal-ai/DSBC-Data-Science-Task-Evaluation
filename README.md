@@ -199,7 +199,6 @@ The following scores were obtained using LLM-as-Judge evaluation methodology:
 
 | Model | Score |
 |-------|--------|
-| olive | 0.903 |
 | claude-sonnet-4 | 0.751 |
 | gemini-2.5-pro | 0.608 |
 | gpt-5.1-codex | 0.728 |
