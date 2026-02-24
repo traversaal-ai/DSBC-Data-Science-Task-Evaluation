@@ -219,4 +219,19 @@ The following scores were obtained using LLM-as-Judge evaluation methodology:
 3. Add new evaluation metrics to `evaluations/llm_as_judge.py`
 4. Update tests and documentation
 
+## Citation
+
+If you find Curator Evals useful, do not forget to cite us!
+
+```
+@misc{kadiyala2025dsbcdatascience,
+      title={DSBC : Data Science task Benchmarking with Context engineering}, 
+      author={Ram Mohan Rao Kadiyala and Siddhant Gupta and Jebish Purbey and Giulio Martini and Ali Shafique and Suman Debnath and Hamza Farooq},
+      year={2025},
+      eprint={2507.23336},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2507.23336}, 
+}
+```
 
